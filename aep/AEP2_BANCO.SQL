@@ -1,0 +1,35 @@
+CREATE TABLE categoria (
+  idCategoria INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  descricao VARCHAR(100) NULL,
+  PRIMARY KEY(idCategoria)
+);
+
+CREATE TABLE comentario (
+  idComentario INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  idPost INTEGER UNSIGNED NOT NULL,
+  nome VARCHAR(100) NULL,
+  descricao TEXT NULL,
+  dataComentario DATETIME NULL,
+  PRIMARY KEY(idComentario),
+  INDEX comentario_FKIndex1(idPost)
+);
+
+CREATE TABLE link (
+  idLink INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  titulo VARCHAR(200) NULL,
+  url VARCHAR(250) NULL,
+  PRIMARY KEY(idLink)
+);
+
+CREATE TABLE post (
+  idPost INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  idCategoria INTEGER UNSIGNED NOT NULL,
+  titulo VARCHAR(100) NULL,
+  post TEXT NULL,
+  dataPost DATETIME NULL,
+  ativo CHAR(1) NULL,
+  tags VARCHAR(150) NULL,
+  PRIMARY KEY(idPost),
+  INDEX post_FKIndex1(idCategoria)
+);
+
