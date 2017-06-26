@@ -38,11 +38,11 @@ class Post {
     }
 
     function setIdPost($idPost) {
-        $this->idPost = $idPost;
+        $this->idPost = (int)$idPost;
     }
 
     function setIdCategoria($idCategoria) {
-        $this->idCategoria = $idCategoria;
+        $this->idCategoria = (int)$idCategoria;
     }
 
     function setTitulo($titulo) {
@@ -58,7 +58,7 @@ class Post {
     }
 
     function setAtivo($ativo) {
-        $this->ativo = $ativo;
+        $this->ativo = (int)$ativo ? 1 : 0;
     }
 
     function setTags($tags) {

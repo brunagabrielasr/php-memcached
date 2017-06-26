@@ -16,34 +16,41 @@ class CategoriaService {
         $resultado->bindValue(":descricao", $categoria->getDescricao(), PDO::PARAM_STR);
         $resultado->execute();
         
+        $categoria->setIdCategoria($pdo->lastInsertId());
+        
         $cache = Singleton::getInstancia()->getCache();
+        $cache->set('categoria_'.$categoria->getIdCategoria(), $categoria);
         $cache->delete("categoria_lista");
     }
     
-    public static function editar($idCategoria) {
-        $cache = Singleton::getInstancia()->getCache();
-        echo $idCategoria;
-        var_dump($categoriaEdit = $cache->get("categoria"));
-        exit;
+    public static function obter($idCategoria) {
+        
+        $cache      = Singleton::getInstancia()->getCache();
+        $cacheKey   = "categoria_{$idCategoria}";
+        $fromCache  = $cache->get($cacheKey);
+        
+        if ($fromCache) {
+            return $fromCache;
+        }
+        
+        $pdo = Singleton::getInstancia()->getPdo();
+        $sql = "SELECT descricao, idCategoria FROM categoria WHERE idCategoria=:idCategoria";
+        $resultado = $pdo->prepare($sql);
+        $resultado->bindValue(":idCategoria", $idCategoria, PDO::PARAM_INT);
+        $resultado->execute();
 
-        if (!$categoriaEdit = $cache->get("categoria")) {
-            $pdo = Singleton::getInstancia()->getPdo();
-            $sql = "SELECT descricao, idCategoria FROM categoria WHERE idCategoria=:idCategoria";
-            $resultado = $pdo->prepare($sql);
-            $resultado->bindValue(":idCategoria", $idCategoria, PDO::PARAM_INT);
-            $resultado->execute();
-
-            if ($categoriaBD = $resultado->fetch(PDO::FETCH_OBJ)) {
-                $categoria = new Categoria();
-                $categoria->setIdCategoria($categoriaBD->idCategoria);
-                $categoria->setDescricao($categoriaBD->descricao); 
-                
-                $cache->set("categoria", $categoriaEdit);
-                return $categoria;                
-            } 
+        if ($categoriaBD = $resultado->fetch(PDO::FETCH_OBJ)) {
             
-            return false;
-        } 
+            $categoria = new Categoria();
+            $categoria->setIdCategoria($categoriaBD->idCategoria);
+            $categoria->setDescricao($categoriaBD->descricao); 
+            
+            $cache->set($cacheKey, $categoria);
+            
+            return $categoria;
+        }
+        
+        throw new InvalidArgumentException('Categoria não encontrada: ' . (int)$idCategoria);
     }
     
     public static function excluir($idCategoria) {
@@ -54,8 +61,10 @@ class CategoriaService {
         $resultado->execute();
         
         $cache = Singleton::getInstancia()->getCache();
+        
         $cache->delete("categoria_{$idCategoria}");
-
+        $cache->delete("categoria_lista");
+        
         return $resultado->rowCount() == 1;
     }
     
@@ -69,7 +78,7 @@ class CategoriaService {
             $resultado = $pdo->prepare($sql);
             $resultado->execute();
 
-            $cidades = [];
+            $categorias = [];
 
             while ($categoriaBD = $resultado->fetch(PDO::FETCH_OBJ)) {
                 $categoria = new Categoria();
@@ -80,7 +89,7 @@ class CategoriaService {
                 $categorias[] = $categoria;
             }            
             
-            $cache->set("categoria_lista", $cidades);
+            $cache->set("categoria_lista", $categorias);
         } 
         
         return $categorias;        

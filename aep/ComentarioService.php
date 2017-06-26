@@ -13,17 +13,20 @@ class ComentarioService {
             $resultado->bindValue(":idComentario", $comentario->getIdComentario(), PDO::PARAM_INT);
         }
 
-        $resultado->bindValue(":idPost", $comentario->getIdPost()->getIdPost(), PDO::PARAM_INT);
+        $resultado->bindValue(":idPost", $comentario->getIdPost(), PDO::PARAM_INT);
         $resultado->bindValue(":nome", $comentario->getNome(), PDO::PARAM_STR);
         $resultado->bindValue(":descricao", $comentario->getDescricao(), PDO::PARAM_STR);
         $resultado->bindValue(":dataComentario", $comentario->getDataComentario(), PDO::PARAM_STR);
         $resultado->execute();
         
+        $comentario->setIdComentario($pdo->lastInsertId());
+        
         $cache = Singleton::getInstancia()->getCache();
+        $cache->set('comentario_'.$comentario->getIdComentario(), $comentario);
         $cache->delete("comentario_lista");
     }
     
-    public static function editar($idComentario) {
+    public static function obter($idComentario) {
         $cache = Singleton::getInstancia()->getCache();
 
         if (!$comentarioEdit = $cache->get("comentario")) {
@@ -58,7 +61,9 @@ class ComentarioService {
         $resultado->execute();
         
         $cache = Singleton::getInstancia()->getCache();
-        $cache->delete("comentario_{idComentario}");
+        
+        $cache->delete("comentario_{$idComentario}");
+        $cache->delete("comentario_lista");
 
         return $resultado->rowCount() == 1;
     }

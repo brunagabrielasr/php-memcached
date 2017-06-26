@@ -30,7 +30,7 @@ if ($_GET) {
         switch ($cmd) {
             case "U":
 
-                if (!$link = LinkService::editar($idLink)) {
+                if (!$link = LinkService::obter($idLink)) {
                     header("location:LinkList.php");
                     exit();
                 }

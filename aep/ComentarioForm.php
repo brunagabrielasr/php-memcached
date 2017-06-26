@@ -6,15 +6,14 @@ include_once './Comentario.php';
 include_once './ComentarioService.php';
 
 $comentario = new Comentario();
-$comentario->setIdPost(new Post());
 
 if ($_POST) {
 
     extract($_POST);
     
-    $idPost = PostService::editar($postId);
+    $post = PostService::obter($postId);
 
-    $comentario->setIdPost($idPost);
+    $comentario->setIdPost($post->getIdPost());
     $comentario->setIdComentario($idComentario);
     $comentario->setDescricao($descricao);
     $comentario->setNome($nome);
@@ -35,7 +34,7 @@ if ($_GET) {
         switch ($cmd) {
             case "U":
 
-                if (!$comentario = ComentarioService::editar($idComentario)) {
+                if (!$comentario = ComentarioService::obter($idComentario)) {
                     header("location:ComentarioList.php");
                     exit();
                 }
@@ -44,7 +43,7 @@ if ($_GET) {
 
             case "D":
 
-                if (ComentarioService::excluir($idPost)) {
+                if (ComentarioService::excluir($idComentario)) {
                     header("location:ComentarioList.php");
                     exit();
                 } else {
@@ -79,7 +78,7 @@ include_once './Cabecalho.php';
             <select name="postId" class="form-control">
                 <?php
                 foreach (PostService::listar() as $post) {
-                    $selected = $comentario->getIdPost()->getIdPost() == $post->getIdPost() ? "selected" : "";
+                    $selected = ($comentario->getIdPost() == $post->getIdPost()) ? "selected" : "";
                     echo "<option value='{$post->getIdPost()}' {$selected}>{$post->getTitulo()}</option>";
                 }
                 ?>

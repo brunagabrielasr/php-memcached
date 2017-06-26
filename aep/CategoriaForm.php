@@ -29,7 +29,7 @@ if ($_GET) {
         switch ($cmd) {
             case "U":
 
-                if (!$categoria = CategoriaService::editar($idCategoria)) {
+                if (!$categoria = CategoriaService::obter($idCategoria)) {
                     header("location:CategoriaList.php");
                     exit();
                 }

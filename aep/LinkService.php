@@ -1,6 +1,10 @@
 <?php
 
 class LinkService {
+    
+    /**
+     * @param Link $link
+     */
     public static function salvar(Link $link) {
         
         $pdo = Singleton::getInstancia()->getPdo();
@@ -17,35 +21,52 @@ class LinkService {
         $resultado->bindValue(":url", $link->getUrl(), PDO::PARAM_STR);
         $resultado->execute();
         
+        $link->setIdLink($pdo->lastInsertId());
+        
         $cache = Singleton::getInstancia()->getCache();
+        $cache->set('link_'.$link->getIdLink(), $link);
         $cache->delete("link_lista");
     }
     
-    public static function editar($idLink) {
-        $cache = Singleton::getInstancia()->getCache();
+    
+    /**
+     * @param int $idLink
+     * @return Link
+     * @throws InvalidArgumentException
+     */
+    public static function obter($idLink) {
+        $cache      = Singleton::getInstancia()->getCache();
+        $cacheKey   = "link_{$idLink}";
+        $fromCache  = $cache->get($cacheKey);
+        
+        if ($fromCache) {
+            return $fromCache;
+        }
 
-        if (!$linkEdit = $cache->get("link")) {
+        $pdo = Singleton::getInstancia()->getPdo();
+        $sql = "SELECT idLink, titulo, url FROM link WHERE idLink=:idLink";
+        $resultado = $pdo->prepare($sql);
+        $resultado->bindValue(":idLink", $idLink, PDO::PARAM_INT);
+        $resultado->execute();
 
-            $pdo = Singleton::getInstancia()->getPdo();
-            $sql = "SELECT idLink, titulo, url FROM link WHERE idLink=:idLink";
-            $resultado = $pdo->prepare($sql);
-            $resultado->bindValue(":idLink", $idLink, PDO::PARAM_INT);
-            $resultado->execute();
+        if ($linkBD = $resultado->fetch(PDO::FETCH_OBJ)) {
+            $link = new Link();
+            $link->setIdLink($linkBD->idLink);
+            $link->setTitulo($linkBD->titulo);
+            $link->setUrl($linkBD->url);
 
-            if ($linkBD = $resultado->fetch(PDO::FETCH_OBJ)) {
-                $link = new Link();
-                $link->setIdLink($linkBD->idLink);
-                $link->setTitulo($linkBD->titulo);
-                $link->setUrl($linkBD->url);
-                
-                $cache->set("link", $linkEdit);
-                return $link;                
-            } 
-            
-            return false;
-        } 
+            $cache->set($cacheKey, $link);
+            return $link;
+        }
+        
+        throw new InvalidArgumentException('Link não encontrado: ' . (int)$idLink);
     }
     
+    
+    /**
+     * @param int $idLink
+     * @return bool
+     */
     public static function excluir($idLink) {
         $pdo = Singleton::getInstancia()->getPdo();
         $sql = "DELETE FROM link WHERE idLink=:idLink";
@@ -54,35 +75,43 @@ class LinkService {
         $resultado->execute();
         
         $cache = Singleton::getInstancia()->getCache();
+        
         $cache->delete("link_{$idLink}");
+        $cache->delete("link_lista");
 
         return $resultado->rowCount() == 1;
     }
     
+    
+    /**
+     * @return array
+     */
     public static function listar() {
         $cache = Singleton::getInstancia()->getCache();
-
-        if (!$links = $cache->get("link_lista")) {
+        $fromCache = $cache->get("link_lista");
         
-            $pdo = Singleton::getInstancia()->getPdo();
-            $sql = "SELECT idLink, titulo, url FROM link ORDER BY idLink";
-            $resultado = $pdo->prepare($sql);
-            $resultado->execute();
-
-            $links = [];
-
-            while ($linkBD = $resultado->fetch(PDO::FETCH_OBJ)) {
-                $link = new Link();
-                $link->setIdLink($linkBD->idLink);
-                $link->setTitulo($linkBD->titulo);
-                $link->setUrl($linkBD->url);
-                
-
-                $links[] = $link;
-            }            
-            
-            $cache->set("link_lista", $links);
+        if ($fromCache) {
+            return $fromCache;
         } 
+        
+        $pdo = Singleton::getInstancia()->getPdo();
+        $sql = "SELECT idLink, titulo, url FROM link ORDER BY idLink";
+        $resultado = $pdo->prepare($sql);
+        $resultado->execute();
+
+        $links = [];
+
+        while ($linkBD = $resultado->fetch(PDO::FETCH_OBJ)) {
+            $link = new Link();
+            $link->setIdLink($linkBD->idLink);
+            $link->setTitulo($linkBD->titulo);
+            $link->setUrl($linkBD->url);
+
+
+            $links[] = $link;
+        }            
+
+        $cache->set("link_lista", $links);
         
         return $links;        
     }

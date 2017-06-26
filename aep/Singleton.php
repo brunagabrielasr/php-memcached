@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 class Singleton {
 
     private static $instancia;
@@ -11,9 +15,16 @@ class Singleton {
             $this->cache = new Memcache();
             $this->cache->addserver("localhost", 11211);
         }
+        
+        //$this->cache->flush();
+        
         return $this->cache;
     }
-
+    
+    
+    /**
+     * @return \PDO
+     */
     function getPdo() {
         if (!$this->pdo) {
             $this->pdo = new PDO("mysql:host=localhost;dbname=aep_3ano;charset=utf8", "root", "");

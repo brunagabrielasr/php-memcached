@@ -6,15 +6,16 @@ include_once './Categoria.php';
 include_once './CategoriaService.php';
 
 $post_new = new Post();
-$post_new->setIdCategoria(new Categoria());
 
 if ($_POST) {
 
     extract($_POST);
     
-    $idCategoria = CategoriaService::editar($categoriaId);
+    $categoria = CategoriaService::obter($categoriaId);
 
-    $post_new->setIdCategoria($idCategoria);
+    $post_new->setIdCategoria($categoria->getIdCategoria());
+    
+    $post_new->setIdPost($idPost);
     $post_new->setTitulo($titulo);
     $post_new->setPost($post_content);
     $post_new->setDataPost($dataPost);
@@ -36,9 +37,9 @@ if ($_GET) {
         switch ($cmd) {
             case "U":
 
-                if (!$post_new = PostService::editar($idPost)) {
-                    header("location:PostList.php");
-                    exit();
+                if (!$post_new = PostService::obter($idPost)) {
+                    header("location:PostList.php?mensagem=Post não encontrado: {$idPost}");
+                    //exit();
                 }
                 break;
 
@@ -79,7 +80,7 @@ include_once './Cabecalho.php';
             <select name="categoriaId" class="form-control">
                 <?php
                 foreach (CategoriaService::listar() as $categoria) {
-                    $selected = $post_new->getIdCategoria()->getIdCategoria() == $categoria->getIdCategoria() ? "selected" : "";
+                    $selected = $post_new->getIdCategoria() == $categoria->getIdCategoria() ? "selected" : "";
                     echo "<option value='{$categoria->getIdCategoria()}' {$selected}>{$categoria->getDescricao()}</option>";
                 }
                 ?>
