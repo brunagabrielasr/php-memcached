@@ -1,10 +1,6 @@
 <?php
-include_once './Singleton.php';
-include_once './Post.php';
-include_once './PostService.php';
-include_once './Categoria.php';
-include_once './CategoriaService.php';
-
+require_once 'autoload.php';
+include_once './Cabecalho.php';
 $post_new = new Post();
 
 if ($_POST) {
@@ -79,7 +75,7 @@ include_once './Cabecalho.php';
             <label>Categoria</label>                
             <select name="categoriaId" class="form-control">
                 <?php
-                foreach (CategoriaService::listar() as $categoria) {
+                foreach (CategoriaService::obterLista() as $categoria) {
                     $selected = $post_new->getIdCategoria() == $categoria->getIdCategoria() ? "selected" : "";
                     echo "<option value='{$categoria->getIdCategoria()}' {$selected}>{$categoria->getDescricao()}</option>";
                 }

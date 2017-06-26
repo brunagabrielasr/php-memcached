@@ -1,8 +1,6 @@
 <?php
-include_once './Singleton.php';
-include_once './Categoria.php';
-include_once './CategoriaService.php';
-
+require_once 'autoload.php';
+include_once './Cabecalho.php';
 $categoria = new Categoria();
 
 if ($_POST) {

@@ -1,8 +1,5 @@
 <?php
-include_once './Singleton.php';
-include_once './Link.php';
-include_once './LinkService.php';
-
+require_once 'autoload.php';
 include_once './Cabecalho.php';
 
 if (isset($_GET["mensagem"])) {

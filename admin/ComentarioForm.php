@@ -1,10 +1,6 @@
 <?php
-include_once './Singleton.php';
-include_once './Post.php';
-include_once './PostService.php';
-include_once './Comentario.php';
-include_once './ComentarioService.php';
-
+require_once 'autoload.php';
+include_once './Cabecalho.php';
 $comentario = new Comentario();
 
 if ($_POST) {
@@ -77,7 +73,7 @@ include_once './Cabecalho.php';
             <label>Post</label>                
             <select name="postId" class="form-control">
                 <?php
-                foreach (PostService::listar() as $post) {
+                foreach (PostService::obterLista() as $post) {
                     $selected = ($comentario->getIdPost() == $post->getIdPost()) ? "selected" : "";
                     echo "<option value='{$post->getIdPost()}' {$selected}>{$post->getTitulo()}</option>";
                 }

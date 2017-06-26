@@ -1,8 +1,6 @@
 <?php
-include_once './Singleton.php';
-include_once './Categoria.php';
-include_once './CategoriaService.php';
 
+require_once 'autoload.php';
 include_once './Cabecalho.php';
 
 if (isset($_GET["mensagem"])) {
@@ -22,7 +20,7 @@ if (isset($_GET["mensagem"])) {
     </thead>
     <tbody>
         <?php
-        foreach (CategoriaService::listar() as $categoria) {
+        foreach (CategoriaService::obterLista() as $categoria) {
             ?>
             <tr>
                 <td> <?php echo $categoria->getIdCategoria() ?> </td>

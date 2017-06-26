@@ -91,7 +91,7 @@ class PostService {
     /**
      * @return array
      */
-    public static function listar() {
+    public static function obterLista() {
         $cache = Singleton::getInstancia()->getCache();
 
         if (!$posts = $cache->get("post_lista")) {

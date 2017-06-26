@@ -1,8 +1,5 @@
 <?php
-include_once './Singleton.php';
-include_once './Post.php';
-include_once './PostService.php';
-
+require_once 'autoload.php';
 include_once './Cabecalho.php';
 
 if (isset($_GET["mensagem"])) {
@@ -27,7 +24,7 @@ if (isset($_GET["mensagem"])) {
     </thead>
     <tbody>
         <?php
-        foreach (PostService::listar() as $post) {
+        foreach (PostService::obterLista() as $post) {
             ?>
             <tr>
                 <td> <?php echo $post->getIdPost() ?> </td>

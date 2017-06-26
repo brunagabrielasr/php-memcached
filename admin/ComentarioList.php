@@ -1,8 +1,6 @@
 <?php
-include_once './Singleton.php';
-include_once './Comentario.php';
-include_once './ComentarioService.php';
 
+require_once 'autoload.php';
 include_once './Cabecalho.php';
 
 if (isset($_GET["mensagem"])) {
@@ -26,7 +24,7 @@ if (isset($_GET["mensagem"])) {
     </thead>
     <tbody>
         <?php
-        foreach (ComentarioService::listar() as $comentario) {
+        foreach (ComentarioService::obterLista() as $comentario) {
             ?>
             <tr>
                 <td> <?php echo $comentario->getIdComentario() ?> </td>

@@ -1,5 +1,7 @@
 <?php
 
+require_once 'autoload.php';
+
 class CategoriaService {
     public static function salvar(Categoria $categoria) {
         
@@ -68,7 +70,7 @@ class CategoriaService {
         return $resultado->rowCount() == 1;
     }
     
-    public static function listar() {
+    public static function obterLista() {
         $cache = Singleton::getInstancia()->getCache();
 
         if (!$categorias = $cache->get("categoria_lista")) {
